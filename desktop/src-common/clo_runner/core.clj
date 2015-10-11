@@ -26,9 +26,7 @@
                                                 0)
                                             (assoc entity :x (- (:x entity) player-speed))
                                             (assoc entity :x 0))
-    :else entity
-    ))
-
+    :else entity))
 
 (defn create-box []  
   (assoc (texture "box.jpg") :x 859 :y (rand-int 500) :width 59 :height 59))
@@ -48,18 +46,17 @@
         down-player (- (:y player) (/ (:height player) 2))        
         up-box (+ (:y box) (/ (:height box) 2))
         down-box (- (:y box) (/ (:height box) 2))]     
-    
-   
+
   (or  
-  (and (> right-player  left-box) (< down-player up-box)
-       (> up-player up-box) (< left-player left-box))
-  (and (> right-player left-box) (> up-player down-box)
-       (< down-player down-box) (< left-player left-box))  
-   (and (< left-player right-box) (> up-player down-box)
-        (< down-player down-box) (> right-player right-box))
-   
-  (and (< left-player right-box) (< down-player up-box)
-       (> up-player up-box) (> right-player right-box)))))
+    (and (> right-player  left-box) (< down-player up-box)
+         (> up-player up-box) (< left-player left-box))
+    (and (> right-player left-box) (> up-player down-box)
+         (< down-player down-box) (< left-player left-box))  
+    (and (< left-player right-box) (> up-player down-box)
+         (< down-player down-box) (> right-player right-box))
+    
+    (and (< left-player right-box) (< down-player up-box)
+         (> up-player up-box) (> right-player right-box)))))
 
 (defn has-collide [player boxes]
   (let [collision false
@@ -68,8 +65,7 @@
                       (if (has-col player (get boxes x))
                         true
                         (recur (dec x)))))]
-    collision
-    ))
+    collision))
 
 (defn moving [entities]    
   (let [backgr (first entities)
@@ -102,19 +98,6 @@
         background (assoc background :x 0 :y 0 :width 800 :height 600)                
           
         player-image (texture (aget birdy 0 0))
-        ;;images (->
-        ;;       []
-        ;;     (conj (texture (aget birdy 0 0)))
-        ;;   (conj (texture (aget birdy 0 1)))
-                ;;   (conj (texture (aget birdy 0 2)))                   
-        ;;   (conj (texture (aget birdy 0 3)))
-        ;;   (conj (texture (aget birdy 0 4)))
-        ;;   (conj (texture (aget birdy 1 0)))
-                ;;   (conj (texture (aget birdy 1 1)))
-        ;;   (conj (texture (aget birdy 1 2)))                  
-        ;;   (conj (texture (aget birdy 1 3)))
-        ;;   (conj (texture (aget birdy 1 4))))
-        ;;     player-image (assoc player-image :moving (animation 0.15 images))
         player-image (assoc player-image :x 10 :y 10 :width 59 :height 59)]  
     [background player-image]))
 
@@ -134,8 +117,7 @@
                (catch Exception e 
                  [(->
                     (texture "gameover.jpg")
-                    (assoc :x 0 :y 0 :width 800 :height 600))           
-                  ])))) 
+                    (assoc :x 0 :y 0 :width 800 :height 600))])))) 
        
   :on-timer
   (fn [screen entities]
@@ -150,9 +132,7 @@
     (->
       (drop-last entities)
       (vec)
-      (conj (move screen (last entities))))))
-        
- 
+      (conj (move screen (last entities)))))) 
 
 (defgame clo-runner-game
   :on-create
