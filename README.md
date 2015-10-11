@@ -5,8 +5,8 @@ This is a leisure game made in clojure.
 
 ## Setup
 
-1) Download and install Leiningen: http://leiningen.org/
-2) Navigate to project folder using command line and type: lein run
+* Download and install Leiningen: http://leiningen.org/
+* Navigate to project folder using command line and type: lein run
 
 
 ## Usage
@@ -20,7 +20,7 @@ In order to restart the game, click on "Game over" screen.
 ## Libraries
 
 
-1) Play-clj: https://github.com/oakes/play-clj
+* Play-clj: https://github.com/oakes/play-clj
 
 
 Copyright @ 2015 Jelena Tabas
