@@ -2,28 +2,29 @@
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]))
 
+(def player-speed 10)
 
 (defn move [screen entity]
   (cond
     (= (:key screen) (key-code :dpad-up)) (if (<
-                                                (+ (:y entity) 30) 
+                                                (+ (:y entity) player-speed) 
                                                 (- 600 (:height entity)))
-                                            (assoc entity :y (+ (:y entity) 30))
+                                            (assoc entity :y (+ (:y entity) player-speed))
                                             (assoc entity :y  (- 600 (:height entity))))              
     (= (:key screen) (key-code :dpad-down)) (if (>
-                                                (- (:y entity) 30) 
+                                                (- (:y entity) player-speed) 
                                                 0)
-                                            (assoc entity :y (- (:y entity) 30))
+                                            (assoc entity :y (- (:y entity) player-speed))
                                             (assoc entity :y 0))         
     (= (:key screen) (key-code :dpad-right)) (if (<
-                                                (+ (:x entity) 30) 
+                                                (+ (:x entity) player-speed) 
                                                 (- 800 (:width entity)))
-                                            (assoc entity :x (+ (:x entity) 30))
+                                            (assoc entity :x (+ (:x entity) player-speed))
                                             (assoc entity :x  (- 800 (:width entity))))                 
     (= (:key screen) (key-code :dpad-left)) (if (>
-                                                (- (:x entity) 30) 
+                                                (- (:x entity) player-speed) 
                                                 0)
-                                            (assoc entity :x (- (:x entity) 30))
+                                            (assoc entity :x (- (:x entity) player-speed))
                                             (assoc entity :x 0))))
 
 
@@ -36,6 +37,38 @@
 (defn move-boxes [boxes]
   (vec (map move-box boxes)))
 
+(defn has-col [player box]
+  (let [left-player (- (:x player) (/ (:width player) 2))
+        right-player (+ (:x player) (/ (:width player) 2))        
+        left-box (- (:x box) (/ (:width box) 2))
+        right-box (+ (:x box) (/ (:width box) 2))        
+        up-player (+ (:y player) (/ (:height player) 2))
+        down-player (- (:y player) (/ (:height player) 2))        
+        up-box (+ (:y box) (/ (:height box) 2))
+        down-box (- (:y box) (/ (:height box) 2))]     
+    
+   
+  (or  
+  (and (> right-player  left-box) (< down-player up-box)
+       (> up-player up-box) (< left-player left-box))
+  (and (> right-player left-box) (> up-player down-box)
+       (< down-player down-box) (< left-player left-box))  
+   (and (< left-player right-box) (> up-player down-box)
+        (< down-player down-box) (> right-player right-box))
+   
+  (and (< left-player right-box) (< down-player up-box)
+       (> up-player up-box) (> right-player right-box)))))
+
+(defn has-collide [player boxes]
+  (let [collision false
+        collision (loop [x (dec (count boxes))]
+                    (when (>= x 0)
+                      (if (has-col player (get boxes x))
+                        true
+                        (recur (dec x)))))]
+    collision
+    ))
+
 (defn moving [entities]    
   (let [backgr (first entities)
         player (last entities)
@@ -45,6 +78,16 @@
                   []))]
     (conj (apply conj (conj [] backgr) boxes) player)))
 
+(defn collision [entities]
+  (let [backgr (first entities)
+        player (last entities)
+        boxes (try              
+                (vec (drop 1 (drop-last entities)))                
+                (catch NullPointerException e
+                  []))]
+    (if (has-collide player boxes)
+      (throw (Exception. "Game over"))
+      (conj (apply conj (conj [] backgr) boxes) player))))
 
 (defscreen main-screen
   :on-show
@@ -78,7 +121,11 @@
   :on-render
   (fn [screen entities]
     (clear!)
-    (render! screen (moving entities))) 
+    (render! screen 
+             (->
+               (moving entities)
+               (collision)
+               ))) 
        
   :on-timer
   (fn [screen entities]
