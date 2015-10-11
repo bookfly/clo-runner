@@ -122,10 +122,13 @@
   (fn [screen entities]
     (clear!)
     (render! screen 
-             (->
-               (moving entities)
-               (collision)
-               ))) 
+             (try
+               (->
+                 (moving entities)
+                 (collision))
+               (catch Exception e 
+                 [(assoc (texture "gameover.jpg")
+                        :x 0 :y 0 :width 800 :height 600)])))) 
        
   :on-timer
   (fn [screen entities]
